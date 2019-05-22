@@ -1,8 +1,31 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-void main() => runApp(BeRightThereApp());
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:http/io_client.dart' as io_client;
+
+import 'package:berightthere_client/config.dart';
+import 'package:berightthere_client/service/trip_service.dart';
+import 'package:berightthere_client/start_trip.dart';
+
+Future<Config> _loadConfig() async {
+  return await rootBundle.loadStructuredData('config.json', (String s) async {
+    return Config.fromJson(json.decode(s));
+  });
+}
+
+void main() async {
+  var config = await _loadConfig();
+  var tripService = TripService(new io_client.IOClient(), config);
+
+  runApp(BeRightThereApp(tripService));
+}
 
 class BeRightThereApp extends StatelessWidget {
+  final TripService _tripService;
+
+  BeRightThereApp(this._tripService);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -10,30 +33,7 @@ class BeRightThereApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: StartTripPage(),
-    );
-  }
-}
-
-class StartTripPage extends StatelessWidget {
-  void _handleStartPressed() {}
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Be right there"),
-      ),
-      body: Center(
-        child: Text(
-          'Ready to start trip!',
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _handleStartPressed,
-        tooltip: 'Start trip',
-        child: Icon(Icons.location_on),
-      ),
+      home: StartTrip(_tripService),
     );
   }
 }
