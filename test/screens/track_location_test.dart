@@ -11,8 +11,7 @@ import 'package:berightthere_client/screens/track_location.dart';
 class MockTripProvider extends Mock implements TripProvider {}
 
 void main() {
-  testWidgets('Displays the trip identifier',
-      (WidgetTester tester) async {
+  testWidgets('Displays the trip identifier', (WidgetTester tester) async {
     final tripIdentifier = TripIdentifier('identifier');
 
     await tester.pumpWidget(MaterialApp(

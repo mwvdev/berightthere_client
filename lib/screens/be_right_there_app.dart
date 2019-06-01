@@ -11,10 +11,6 @@ class BeRightThereApp extends StatelessWidget {
 
   BeRightThereApp(this._tripProvider);
 
-  bool isCheckedIn(TripModel tripModel) {
-    return tripModel.tripIdentifier != null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

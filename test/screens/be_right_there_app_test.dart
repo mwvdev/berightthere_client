@@ -31,7 +31,11 @@ void main() {
       });
     }
 
-    final states = [TripState.ready, TripState.checkingIn, TripState.checkInFailed];
+    final states = [
+      TripState.ready,
+      TripState.checkingIn,
+      TripState.checkInFailed
+    ];
     states.forEach((tripState) => testStartTripDisplayed(tripState));
   });
 
