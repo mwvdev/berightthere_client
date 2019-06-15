@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:berightthere_client/config.dart';
+import 'package:berightthere_client/providers/trip_provider_exception.dart';
+import 'package:berightthere_client/redux/location.dart';
 import 'package:berightthere_client/redux/trip_identifier.dart';
 
 class TripProvider {
@@ -18,16 +20,21 @@ class TripProvider {
     if (response.statusCode == 200) {
       return TripIdentifier.fromJson(json.decode(response.body));
     } else {
-      throw CheckInException(
+      throw TripProviderException(
           'Failed to checkin. Reason: ${response.reasonPhrase}');
     }
   }
-}
 
-class CheckInException implements Exception {
-  final String _message;
+  Future addLocation(TripIdentifier tripIdentifier, Location location) async {
+    final response = await _client.post('${_config.apiEndpoint}/trip/'
+        '${tripIdentifier.identifier}/'
+        'addLocation/'
+        '${location.latitude}/'
+        '${location.longitude}');
 
-  CheckInException(this._message);
-
-  String get message => _message;
+    if (response.statusCode != 200) {
+      throw TripProviderException(
+          'Failed to report location. Reason: ${response.reasonPhrase}');
+    }
+  }
 }
