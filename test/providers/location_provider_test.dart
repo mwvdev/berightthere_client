@@ -16,8 +16,8 @@ class MockStreamSubscription extends Mock
 
 void main() {
   test('subscribe triggers callback when new position available', () async {
-    var position = Position(latitude: 53, longitude: 13);
-    var positionStream = Stream.fromIterable([position]);
+    final position = Position(latitude: 53, longitude: 13);
+    final positionStream = Stream.fromIterable([position]);
 
     final geolocator = MockGeolocator();
     when(geolocator.getPositionStream(any)).thenAnswer((_) => positionStream);
@@ -34,5 +34,20 @@ void main() {
     LocationProvider(geolocator).subscribe(locationChangedCallback);
 
     expect(completer.future, completes);
+  });
+
+  test('unsubscribe cancels subscription to location changes', () async {
+    final positionStream = MockStream();
+    final streamSubscription = MockStreamSubscription();
+
+    final geolocator = MockGeolocator();
+    when(geolocator.getPositionStream(any)).thenAnswer((_) => positionStream);
+    when(positionStream.listen(any)).thenReturn(streamSubscription);
+
+    final locationProvider = LocationProvider(geolocator);
+    locationProvider.subscribe((_) {});
+    locationProvider.unsubscribe();
+
+    verify(streamSubscription.cancel());
   });
 }
