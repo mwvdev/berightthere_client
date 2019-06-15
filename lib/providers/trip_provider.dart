@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:berightthere_client/config.dart';
-import 'package:berightthere_client/model/trip_identifier.dart';
+import 'package:berightthere_client/redux/trip_identifier.dart';
 
 class TripProvider {
   final http.Client _client;

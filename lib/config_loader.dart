@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:berightthere_client/config.dart';
 import 'package:flutter/services.dart';
+
+import 'package:berightthere_client/config.dart';
 
 class ConfigLoader {
   Future<Config> load(AssetBundle assetBundle) async {

@@ -1,57 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:provider/provider.dart';
+import 'package:redux/redux.dart';
 
-import 'package:berightthere_client/model/trip_identifier.dart';
-import 'package:berightthere_client/model/trip_model.dart';
-import 'package:berightthere_client/provider/trip_provider.dart';
+import 'package:berightthere_client/providers/location_provider.dart';
+import 'package:berightthere_client/providers/trip_provider.dart';
+import 'package:berightthere_client/redux/actions/checkin_actions.dart';
+import 'package:berightthere_client/redux/actions/location_actions.dart';
+import 'package:berightthere_client/redux/app_state.dart';
+import 'package:berightthere_client/redux/location.dart';
+import 'package:berightthere_client/redux/middleware/location_middleware.dart';
+import 'package:berightthere_client/redux/middleware/trip_middleware.dart';
+import 'package:berightthere_client/redux/reducers/reducers.dart';
+import 'package:berightthere_client/redux/trip_identifier.dart';
 import 'package:berightthere_client/screens/be_right_there_app.dart';
-import 'package:berightthere_client/screens/start_trip.dart';
-import 'package:berightthere_client/screens/track_location.dart';
+
+class MockLocationProvider extends Mock implements LocationProvider {}
 
 class MockTripProvider extends Mock implements TripProvider {}
 
 void main() {
-  group('Displays the start trip widget when checking in', () {
-    void testStartTripDisplayed(TripState tripState) {
-      testWidgets('Displays the start trip widget when state is $tripState',
-          (WidgetTester tester) async {
-        final tripModel = TripModel();
-        tripModel.tripState = tripState;
+  MockTripProvider mockTripProvider;
+  TripMiddleware tripMiddleware;
 
-        await tester.pumpWidget(MaterialApp(
-          home: ChangeNotifierProvider(
-            builder: (context) => tripModel,
-            child: BeRightThereApp(MockTripProvider()),
-          ),
-        ));
+  MockLocationProvider mockLocationProvider;
+  LocationMiddleware locationMiddleware;
 
-        expect(find.byType(StartTrip), findsOneWidget);
-      });
-    }
+  setUp(() {
+    mockTripProvider = MockTripProvider();
+    tripMiddleware = TripMiddleware(mockTripProvider);
 
-    final states = [
-      TripState.ready,
-      TripState.checkingIn,
-      TripState.checkInFailed
-    ];
-    states.forEach((tripState) => testStartTripDisplayed(tripState));
+    mockLocationProvider = MockLocationProvider();
+    locationMiddleware = LocationMiddleware(mockLocationProvider);
   });
 
-  testWidgets('Displays the track location widget when checked in',
+  Store<AppState> createStore(AppState appState) {
+    return Store<AppState>(appStateReducer,
+        middleware: [tripMiddleware, locationMiddleware],
+        initialState: appState);
+  }
+
+  Store<AppState> createDefaultStore() {
+    return createStore(AppState());
+  }
+
+  testWidgets('Displays the start trip screen prior to checked-in',
       (WidgetTester tester) async {
-    final tripModel = TripModel();
-    tripModel.tripIdentifier = TripIdentifier('identifier');
-    tripModel.tripState = TripState.checkedIn;
+    await tester.pumpWidget(BeRightThereApp(createDefaultStore()));
 
-    await tester.pumpWidget(MaterialApp(
-      home: ChangeNotifierProvider(
-        builder: (context) => tripModel,
-        child: BeRightThereApp(MockTripProvider()),
-      ),
-    ));
+    expect(find.byKey(Key('startTripScreen')), findsOneWidget);
+  });
 
-    expect(find.byType(TrackLocation), findsOneWidget);
+  testWidgets('Shows loading screen while checking in',
+      (WidgetTester tester) async {
+    final appState = AppState(isLoading: true);
+
+    await tester.pumpWidget(BeRightThereApp(createStore(appState)));
+
+    expect(find.byKey(Key('loadingScreen')), findsOneWidget);
+  });
+
+  testWidgets('Shows loading screen while checking in and first location',
+      (WidgetTester tester) async {
+    final location = Location(55.6739062, 12.5556993);
+
+    final appState =
+        AppState(isLoading: true);
+    var store = createStore(appState);
+
+    await tester.pumpWidget(BeRightThereApp(store));
+
+    expect(find.byKey(Key('loadingScreen')), findsOneWidget);
+
+    store.dispatch(CheckInSucceededAction(TripIdentifier('identifier')));
+    store.dispatch(LocationChangedAction(location));
+    await tester.pump();
+
+    expect(find.byKey(Key('sharingTripScreen')), findsOneWidget);
   });
 }

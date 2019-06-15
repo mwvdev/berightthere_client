@@ -4,7 +4,7 @@ import 'package:matcher/matcher.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:berightthere_client/config.dart';
-import 'package:berightthere_client/provider/trip_provider.dart';
+import 'package:berightthere_client/providers/trip_provider.dart';
 
 class MockClient extends Mock implements http.Client {}
 
