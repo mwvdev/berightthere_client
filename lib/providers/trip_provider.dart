@@ -15,7 +15,8 @@ class TripProvider {
   TripProvider(this._client, this._config);
 
   Future<TripIdentifier> checkIn() async {
-    final response = await _client.get('${_config.apiEndpoint}/trip/checkin');
+    final response =
+        await _client.get('${_config.beRightThereAuthority}/api/trip/checkin');
 
     if (response.statusCode == 200) {
       return TripIdentifier.fromJson(json.decode(response.body));
@@ -26,15 +27,24 @@ class TripProvider {
   }
 
   Future addLocation(TripIdentifier tripIdentifier, Location location) async {
-    final response = await _client.post('${_config.apiEndpoint}/trip/'
-        '${tripIdentifier.identifier}/'
-        'addLocation/'
-        '${location.latitude}/'
-        '${location.longitude}');
+    final response =
+        await _client.post('${_config.beRightThereAuthority}/api/trip/'
+            '${tripIdentifier.identifier}/'
+            'addLocation/'
+            '${location.latitude}/'
+            '${location.longitude}');
 
     if (response.statusCode != 200) {
       throw TripProviderException(
           'Failed to report location. Reason: ${response.reasonPhrase}');
     }
+  }
+
+  String getTripUrl(TripIdentifier tripIdentifier) {
+    if (tripIdentifier == null) {
+      throw ArgumentError.notNull('tripIdentifier');
+    }
+
+    return '${_config.beRightThereAuthority}/trip/${tripIdentifier.identifier}';
   }
 }

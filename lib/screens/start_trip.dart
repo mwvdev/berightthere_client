@@ -15,7 +15,7 @@ class StartTrip extends StatelessWidget {
       body: Center(
         child: Text('Ready to start trip', key: Key('startTripText')),
       ),
-      floatingActionButton: new StoreConnector<AppState, VoidCallback>(
+      floatingActionButton: StoreConnector<AppState, VoidCallback>(
         converter: (store) {
           return () => store.dispatch(CheckInAction());
         },

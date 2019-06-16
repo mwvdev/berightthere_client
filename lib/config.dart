@@ -1,9 +1,9 @@
 class Config {
-  final String apiEndpoint;
+  final String beRightThereAuthority;
 
-  Config(this.apiEndpoint);
+  Config(this.beRightThereAuthority);
 
   factory Config.fromJson(Map<String, dynamic> json) {
-    return Config(json['apiEndpoint']);
+    return Config(json['beRightThereAuthority']);
   }
 }

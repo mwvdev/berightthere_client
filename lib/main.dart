@@ -6,6 +6,7 @@ import 'package:redux/redux.dart';
 
 import 'package:berightthere_client/config_loader.dart';
 import 'package:berightthere_client/providers/location_provider.dart';
+import 'package:berightthere_client/providers/share_provider.dart';
 import 'package:berightthere_client/providers/trip_provider.dart';
 import 'package:berightthere_client/redux/app_state.dart';
 import 'package:berightthere_client/redux/middleware/location_middleware.dart';
@@ -22,9 +23,11 @@ void main() async {
   var locationProvider = LocationProvider(Geolocator());
   var locationMiddleware = LocationMiddleware(locationProvider);
 
+  var shareProvider = ShareProvider();
+
   final store = Store<AppState>(appStateReducer,
       middleware: [tripMiddleware, locationMiddleware],
       initialState: AppState());
 
-  runApp(BeRightThereApp(store));
+  runApp(BeRightThereApp(tripProvider, shareProvider, store));
 }

@@ -1,4 +1,3 @@
 {
-  "apiEndpoint": "https://localhost:8080/api",
-  "tripEndpoint": "https://localhost:8080/trip"
+  "beRightThereEndpoint": "https://localhost:8080"
 }

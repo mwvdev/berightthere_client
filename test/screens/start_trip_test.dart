@@ -30,11 +30,7 @@ void main() {
   testWidgets('Display a status message and a start trip button',
       (WidgetTester tester) async {
     await tester.pumpWidget(StoreProvider<AppState>(
-        store: store,
-        child: MaterialApp(
-            home: new StoreConnector<AppState, AppState>(
-                converter: (store) => store.state,
-                builder: (context, state) => StartTrip()))));
+        store: store, child: MaterialApp(home: StartTrip())));
 
     expect(find.byKey(Key('startTripText')), findsOneWidget);
     expect(find.byKey(Key('startTripButton')), findsOneWidget);
@@ -42,16 +38,12 @@ void main() {
 
   testWidgets('Start trip button triggers check-in',
       (WidgetTester tester) async {
-    var tripIdentifier = TripIdentifier('identifier');
+    final tripIdentifier = TripIdentifier('identifier');
     when(mockTripProvider.checkIn())
         .thenAnswer((_) => Future.value(tripIdentifier));
 
     await tester.pumpWidget(StoreProvider<AppState>(
-        store: store,
-        child: MaterialApp(
-            home: new StoreConnector<AppState, AppState>(
-                converter: (store) => store.state,
-                builder: (context, state) => StartTrip()))));
+        store: store, child: MaterialApp(home: StartTrip())));
 
     await tester.tap(find.byKey(Key('startTripButton')));
     await tester.pump();

@@ -12,7 +12,8 @@ import 'package:berightthere_client/redux/trip_identifier.dart';
 class MockClient extends Mock implements http.Client {}
 
 void main() {
-  final config = Config("https://localhost:8080/api");
+  final config =
+      Config("https://localhost:8080");
 
   http.Client client;
 
@@ -78,5 +79,22 @@ void main() {
             (e) => e.message,
             "message contains reason phrase",
             contains(reasonPhrase))));
+  });
+
+  test('getTripUri generates a valid Uri from trip identifier', () {
+    final tripIdentifier = TripIdentifier('identifier');
+
+    var tripUri = TripProvider(client, config).getTripUrl(tripIdentifier);
+
+    expect(
+        tripUri,
+        equals('https://localhost:8080/trip/${tripIdentifier.identifier}'));
+  });
+
+  test('getTripUri throws when trip identifier is invalid', () {
+    final tripIdentifier = null;
+
+    expect(() => TripProvider(client, config).getTripUrl(tripIdentifier),
+        throwsA(const TypeMatcher<ArgumentError>()));
   });
 }

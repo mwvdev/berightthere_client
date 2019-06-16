@@ -4,6 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 
 import 'package:berightthere_client/providers/location_provider.dart';
+import 'package:berightthere_client/providers/share_provider.dart';
 import 'package:berightthere_client/providers/trip_provider.dart';
 import 'package:berightthere_client/redux/actions/checkin_actions.dart';
 import 'package:berightthere_client/redux/actions/location_actions.dart';
@@ -17,6 +18,8 @@ import 'package:berightthere_client/screens/be_right_there_app.dart';
 
 class MockLocationProvider extends Mock implements LocationProvider {}
 
+class MockShareProvider extends Mock implements ShareProvider {}
+
 class MockTripProvider extends Mock implements TripProvider {}
 
 void main() {
@@ -26,12 +29,16 @@ void main() {
   MockLocationProvider mockLocationProvider;
   LocationMiddleware locationMiddleware;
 
+  MockShareProvider mockShareProvider;
+
   setUp(() {
     mockTripProvider = MockTripProvider();
     tripMiddleware = TripMiddleware(mockTripProvider);
 
     mockLocationProvider = MockLocationProvider();
     locationMiddleware = LocationMiddleware(mockLocationProvider);
+
+    mockShareProvider = MockShareProvider();
   });
 
   Store<AppState> createStore(AppState appState) {
@@ -46,7 +53,8 @@ void main() {
 
   testWidgets('Displays the start trip screen prior to checked-in',
       (WidgetTester tester) async {
-    await tester.pumpWidget(BeRightThereApp(createDefaultStore()));
+    await tester.pumpWidget(BeRightThereApp(
+        mockTripProvider, mockShareProvider, createDefaultStore()));
 
     expect(find.byKey(Key('startTripScreen')), findsOneWidget);
   });
@@ -55,7 +63,8 @@ void main() {
       (WidgetTester tester) async {
     final appState = AppState(isLoading: true);
 
-    await tester.pumpWidget(BeRightThereApp(createStore(appState)));
+    await tester.pumpWidget(BeRightThereApp(
+        mockTripProvider, mockShareProvider, createStore(appState)));
 
     expect(find.byKey(Key('loadingScreen')), findsOneWidget);
   });
@@ -67,9 +76,11 @@ void main() {
     final appState = AppState(isLoading: true);
     var store = createStore(appState);
 
-    when(mockTripProvider.addLocation(any, any)).thenAnswer((_) => Future.value());
+    when(mockTripProvider.addLocation(any, any))
+        .thenAnswer((_) => Future.value());
 
-    await tester.pumpWidget(BeRightThereApp(store));
+    await tester.pumpWidget(
+        BeRightThereApp(mockTripProvider, mockShareProvider, store));
 
     expect(find.byKey(Key('loadingScreen')), findsOneWidget);
 

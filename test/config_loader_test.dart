@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
-
-import 'package:berightthere_client/config_loader.dart';
 import 'package:test_api/test_api.dart';
 
+import 'package:berightthere_client/config_loader.dart';
+
 class TestAssetBundle extends CachingAssetBundle {
-  final _configJson = '{ "apiEndpoint": "https://localhost:8080/api" }';
+  final _configJson = '{ "beRightThereAuthority": "https://localhost:8080" }';
 
   @override
   Future<ByteData> load(String key) async {
@@ -21,10 +21,8 @@ class TestAssetBundle extends CachingAssetBundle {
 
 void main() {
   test('load returns a Config instance', () async {
-    final apiEndpoint = 'https://localhost:8080/api';
-
     var config = await ConfigLoader().load(TestAssetBundle());
 
-    expect(config.apiEndpoint, equals(apiEndpoint));
+    expect(config.beRightThereAuthority, equals('https://localhost:8080'));
   });
 }
