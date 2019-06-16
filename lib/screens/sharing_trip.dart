@@ -16,7 +16,7 @@ class SharingTrip extends StatelessWidget {
         ),
         body: Center(
           child:
-              Text('Currently logged ${_locations.length} location changes!'),
+              Text('Currently shared ${_locations.length} location changes!'),
         ));
   }
 }

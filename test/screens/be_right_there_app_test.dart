@@ -64,9 +64,10 @@ void main() {
       (WidgetTester tester) async {
     final location = Location(55.6739062, 12.5556993);
 
-    final appState =
-        AppState(isLoading: true);
+    final appState = AppState(isLoading: true);
     var store = createStore(appState);
+
+    when(mockTripProvider.addLocation(any, any)).thenAnswer((_) => Future.value());
 
     await tester.pumpWidget(BeRightThereApp(store));
 

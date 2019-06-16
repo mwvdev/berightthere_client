@@ -37,8 +37,10 @@ void main() {
 
     expect(
         () => TripProvider(client, config).checkIn(),
-        throwsA(const TypeMatcher<TripProviderException>().having((e) => e.message,
-            "message contains reason phrase", contains(reasonPhrase))));
+        throwsA(const TypeMatcher<TripProviderException>().having(
+            (e) => e.message,
+            "message contains reason phrase",
+            contains(reasonPhrase))));
   });
 
   test('addLocation reports a location', () async {
@@ -72,7 +74,9 @@ void main() {
     expect(
         () =>
             TripProvider(client, config).addLocation(tripIdentifier, location),
-        throwsA(const TypeMatcher<TripProviderException>().having((e) => e.message,
-            "message contains reason phrase", contains(reasonPhrase))));
+        throwsA(const TypeMatcher<TripProviderException>().having(
+            (e) => e.message,
+            "message contains reason phrase",
+            contains(reasonPhrase))));
   });
 }

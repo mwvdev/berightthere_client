@@ -43,7 +43,8 @@ void main() {
   testWidgets('Start trip button triggers check-in',
       (WidgetTester tester) async {
     var tripIdentifier = TripIdentifier('identifier');
-    when(mockTripProvider.checkIn()).thenAnswer((_) => Future.value(tripIdentifier));
+    when(mockTripProvider.checkIn())
+        .thenAnswer((_) => Future.value(tripIdentifier));
 
     await tester.pumpWidget(StoreProvider<AppState>(
         store: store,

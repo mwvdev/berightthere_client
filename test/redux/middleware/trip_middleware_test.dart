@@ -4,7 +4,9 @@ import 'package:test_api/test_api.dart';
 
 import 'package:berightthere_client/providers/trip_provider.dart';
 import 'package:berightthere_client/redux/actions/checkin_actions.dart';
+import 'package:berightthere_client/redux/actions/location_actions.dart';
 import 'package:berightthere_client/redux/app_state.dart';
+import 'package:berightthere_client/redux/location.dart';
 import 'package:berightthere_client/redux/middleware/trip_middleware.dart';
 import 'package:berightthere_client/redux/trip_identifier.dart';
 
@@ -70,5 +72,37 @@ main() {
         .single;
 
     expect(checkInFailedAction.error, equals(error));
+  });
+
+  test('should addLocation when location changed', () async {
+    final tripIdentifier = TripIdentifier('identifier');
+    final location = Location(55.6739062, 12.5556993);
+
+    var appState = AppState(tripIdentifier: tripIdentifier);
+    when(mockStore.state).thenReturn(appState);
+
+    when(mockTripProvider.addLocation(tripIdentifier, location))
+        .thenAnswer((_) => Future.value());
+
+    tripMiddleware.call(
+        mockStore, LocationChangedAction(location), (action) => {});
+
+    verify(mockTripProvider.addLocation(tripIdentifier, location));
+  });
+
+  test('should ignore errors occuring when adding location', () async {
+    final tripIdentifier = TripIdentifier('identifier');
+    final location = Location(55.6739062, 12.5556993);
+
+    var appState = AppState(tripIdentifier: tripIdentifier);
+    when(mockStore.state).thenReturn(appState);
+
+    when(mockTripProvider.addLocation(tripIdentifier, location))
+        .thenAnswer((_) => Future.error('Error'));
+
+    tripMiddleware.call(
+        mockStore, LocationChangedAction(location), (action) => {});
+
+    verify(mockTripProvider.addLocation(tripIdentifier, location));
   });
 }
