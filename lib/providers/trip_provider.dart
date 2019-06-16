@@ -28,7 +28,7 @@ class TripProvider {
 
   Future addLocation(TripIdentifier tripIdentifier, Location location) async {
     final response =
-        await _client.post('${_config.beRightThereAuthority}/api/trip/'
+        await _client.get('${_config.beRightThereAuthority}/api/trip/'
             '${tripIdentifier.identifier}/'
             'addLocation/'
             '${location.latitude}/'

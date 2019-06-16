@@ -48,7 +48,7 @@ void main() {
     final tripIdentifier = TripIdentifier('identifier');
     final location = Location(55.6739062, 12.5556993);
 
-    when(client.post('https://localhost:8080/api/trip/'
+    when(client.get('https://localhost:8080/api/trip/'
             '${tripIdentifier.identifier}/'
             'addLocation/'
             '${location.latitude}/'
