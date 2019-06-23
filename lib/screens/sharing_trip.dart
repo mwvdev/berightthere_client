@@ -4,7 +4,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:berightthere_client/providers/share_provider.dart';
 import 'package:berightthere_client/providers/trip_provider.dart';
 import 'package:berightthere_client/redux/app_state.dart';
-import 'package:berightthere_client/redux/location.dart';
+import 'package:berightthere_client/redux/handled_location.dart';
 import 'package:berightthere_client/redux/trip_identifier.dart';
 
 class SharingTrip extends StatelessWidget {
@@ -27,8 +27,8 @@ class SharingTrip extends StatelessWidget {
         title: Text('Be right there'),
       ),
       body: Center(
-        child: StoreConnector<AppState, List<Location>>(
-          converter: (store) => store.state.locations,
+        child: StoreConnector<AppState, List<HandledLocation>>(
+          converter: (store) => store.state.handledLocations,
           builder: (context, locations) {
             return Text('Currently shared ${locations.length} location changes',
                 key: Key('sharingTripText'));

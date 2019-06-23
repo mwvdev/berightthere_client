@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
-import 'package:berightthere_client/redux/actions/checkin_actions.dart';
+import 'package:berightthere_client/redux/actions/trip_actions.dart';
 import 'package:berightthere_client/redux/app_state.dart';
 
 class StartTrip extends StatelessWidget {

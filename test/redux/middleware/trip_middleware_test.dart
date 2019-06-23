@@ -3,7 +3,7 @@ import 'package:redux/redux.dart';
 import 'package:test_api/test_api.dart';
 
 import 'package:berightthere_client/providers/trip_provider.dart';
-import 'package:berightthere_client/redux/actions/checkin_actions.dart';
+import 'package:berightthere_client/redux/actions/trip_actions.dart';
 import 'package:berightthere_client/redux/actions/location_actions.dart';
 import 'package:berightthere_client/redux/app_state.dart';
 import 'package:berightthere_client/redux/location.dart';
@@ -66,15 +66,86 @@ main() {
 
     await untilCalled(
         mockStore.dispatch(const TypeMatcher<CheckInFailedAction>()));
-    var checkInFailedAction = verify(mockStore
+    var action = verify(mockStore
             .dispatch(captureThat(const TypeMatcher<CheckInFailedAction>())))
         .captured
         .single;
 
-    expect(checkInFailedAction.error, equals(error));
+    expect(action.error, equals(error));
   });
 
-  test('should addLocation when location changed', () async {
+  test(
+      'should dispatch ReportLocationAction when location changed and incoming locations is empty',
+      () async {
+    final location = Location(55.6739062, 12.5556993);
+
+    var appState = AppState();
+    when(mockStore.state).thenReturn(appState);
+
+    tripMiddleware.call(
+        mockStore, LocationChangedAction(location), (action) => {});
+
+    var action = verify(mockStore
+            .dispatch(captureThat(const TypeMatcher<ReportLocationAction>())))
+        .captured
+        .single;
+    expect(action.location, equals(location));
+  });
+
+  test(
+      'should not dispatch ReportLocationAction when location changed and incoming locations is not empty',
+      () async {
+    final location = Location(55.6739062, 12.5556993);
+
+    var appState = AppState(incomingLocations: [Location(0, 0)]);
+    when(mockStore.state).thenReturn(appState);
+
+    tripMiddleware.call(
+        mockStore, LocationChangedAction(location), (action) => {});
+
+    verifyNever(mockStore.dispatch(any));
+  });
+
+  test(
+      'should dispatch ReportLocationAction for next location when reporting '
+      'location succeeded and incoming locations not empty', () async {
+    final location1 = Location(55.6739062, 12.5556993);
+    final location2 = Location(55.6746322, 12.5585318);
+
+    var appState = AppState(incomingLocations: [location1, location2]);
+    when(mockStore.state).thenReturn(appState);
+
+    tripMiddleware.call(mockStore,
+        ReportLocationSucceededAction(Location(0, 0)), (action) => {});
+
+    var action = verify(mockStore
+            .dispatch(captureThat(const TypeMatcher<ReportLocationAction>())))
+        .captured
+        .single;
+    expect(action.location, equals(location2));
+  });
+
+  test(
+      'should dispatch ReportLocationAction for next location when reporting '
+      'location failed and incoming locations not empty', () async {
+    final location1 = Location(55.6739062, 12.5556993);
+    final location2 = Location(55.6746322, 12.5585318);
+
+    var appState = AppState(incomingLocations: [location1, location2]);
+    when(mockStore.state).thenReturn(appState);
+
+    tripMiddleware.call(mockStore,
+        ReportLocationSucceededAction(Location(0, 0)), (action) => {});
+
+    var action = verify(mockStore
+            .dispatch(captureThat(const TypeMatcher<ReportLocationAction>())))
+        .captured
+        .single;
+    expect(action.location, equals(location2));
+  });
+
+  test('should dispatch ReportLocationSucceededAction when reporting succeeds',
+      () async {
     final tripIdentifier = TripIdentifier('identifier');
     final location = Location(55.6739062, 12.5556993);
 
@@ -85,12 +156,19 @@ main() {
         .thenAnswer((_) => Future.value());
 
     tripMiddleware.call(
-        mockStore, LocationChangedAction(location), (action) => {});
+        mockStore, ReportLocationAction(location), (action) => {});
 
-    verify(mockTripProvider.addLocation(tripIdentifier, location));
+    await untilCalled(
+        mockStore.dispatch(const TypeMatcher<ReportLocationSucceededAction>()));
+    var action = verify(mockStore.dispatch(
+            captureThat(const TypeMatcher<ReportLocationSucceededAction>())))
+        .captured
+        .single;
+    expect(action.location, equals(location));
   });
 
-  test('should ignore errors occuring when adding location', () async {
+  test('should dispatch ReportLocationFailedAction when reporting succeeds',
+      () async {
     final tripIdentifier = TripIdentifier('identifier');
     final location = Location(55.6739062, 12.5556993);
 
@@ -101,8 +179,14 @@ main() {
         .thenAnswer((_) => Future.error('Error'));
 
     tripMiddleware.call(
-        mockStore, LocationChangedAction(location), (action) => {});
+        mockStore, ReportLocationAction(location), (action) => {});
 
-    verify(mockTripProvider.addLocation(tripIdentifier, location));
+    await untilCalled(
+        mockStore.dispatch(const TypeMatcher<ReportLocationFailedAction>()));
+    var action = verify(mockStore.dispatch(
+            captureThat(const TypeMatcher<ReportLocationFailedAction>())))
+        .captured
+        .single;
+    expect(action.location, equals(location));
   });
 }

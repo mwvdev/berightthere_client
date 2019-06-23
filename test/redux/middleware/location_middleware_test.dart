@@ -3,7 +3,7 @@ import 'package:redux/redux.dart';
 import 'package:test_api/test_api.dart';
 
 import 'package:berightthere_client/providers/location_provider.dart';
-import 'package:berightthere_client/redux/actions/checkin_actions.dart';
+import 'package:berightthere_client/redux/actions/trip_actions.dart';
 import 'package:berightthere_client/redux/actions/location_actions.dart';
 import 'package:berightthere_client/redux/app_state.dart';
 import 'package:berightthere_client/redux/location.dart';

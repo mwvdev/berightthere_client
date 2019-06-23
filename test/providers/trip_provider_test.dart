@@ -12,8 +12,7 @@ import 'package:berightthere_client/redux/trip_identifier.dart';
 class MockClient extends Mock implements http.Client {}
 
 void main() {
-  final config =
-      Config("https://localhost:8080");
+  final config = Config("https://localhost:8080");
 
   http.Client client;
 
@@ -86,8 +85,7 @@ void main() {
 
     var tripUri = TripProvider(client, config).getTripUrl(tripIdentifier);
 
-    expect(
-        tripUri,
+    expect(tripUri,
         equals('https://localhost:8080/trip/${tripIdentifier.identifier}'));
   });
 
