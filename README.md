@@ -5,4 +5,4 @@
 
 A [Flutter](https://flutter.dev) client implementation for [berightthere](https://github.com/mwvdev/berightthere).
 
-This is a work in progress and a first attempt at using Flutter (and dart).
+This was a first attempt at using Flutter (and dart) but has been discontinued. It might be picked up when Flutter gets better plugin support for retrieving location updates from a background service.
